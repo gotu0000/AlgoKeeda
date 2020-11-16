@@ -35,19 +35,68 @@ class BinaryTree(object):
 			ret.append(lastInLevel.val)
 		return ret
 
-def make_binary_tree(bList):
-	# currBinaryLevel = 1
-	# numberOfNodesOnCurrLvel = (2<<currBinaryLevel)-1
-	# print(numberOfNodesOnCurrLvel)
-	# if len(bList) > 0:
-	# 	root = TreeNode()
-	# 	current = root
-	# 	for node in bList[1:]:
-	# 		numberOfNodesOnCurrLvel = (2<<currBinaryLevel)-1
-	# 		for n in range(numberOfNodesOnCurrLvel):
-				
+	def preOrderTraversalHelper(self, root, ret):
+		"""
+		:type root: TreeNode
+		:rtype: List[]
+		"""
+		#root, left then right
+		#base case for recursion
+		if(root == None):
+			ret.append(None)
+			return
+		else:
+			ret.append(root.val)
+			self.preOrderTraversalHelper(root.left, ret)
+			self.preOrderTraversalHelper(root.right, ret)
 
-	# 		currBinaryLevel = currBinaryLevel + 1
+	def preOrderedTraversal(self, root):
+		"""
+		:type root: TreeNode
+		:rtype: List[]
+		"""
+		ret = []
+		self.preOrderTraversalHelper(root, ret)
+		return ret
+
+class Codec(BinaryTree):
+
+	def serialize(self, root):
+		"""Encodes a tree to a single string.
+
+		:type root: TreeNode
+		:rtype: str
+		"""
+		ret = self.preOrderedTraversal(root)
+		retStr = '_'.join([str(elem) for elem in ret]) 
+		return retStr
+
+	def deserializeHelper(self, dataList):
+		if(len(dataList) == 0):
+			return None
+		elif(dataList[0] == 'None'):
+			dataList.pop(0)
+			return None
+		else:
+			root = TreeNode(dataList[0])
+			#remove the root node
+			dataList.pop(0)
+			root.left = self.deserializeHelper(dataList)
+			root.right = self.deserializeHelper(dataList)
+			return root
+
+	def deserialize(self, data):
+		"""Decodes your encoded data to tree.
+
+		:type data: str
+		:rtype: TreeNode
+		"""
+		dataList = data.split("_")
+		print(dataList)
+		ret = self.deserializeHelper(dataList)
+		return ret
+
+def make_binary_tree(bList):
 	root = TreeNode(1)
 	root.left = TreeNode(2)
 	root.right = TreeNode(3)
@@ -57,6 +106,15 @@ def make_binary_tree(bList):
 
 if __name__ == '__main__':
 	ret = make_binary_tree([1,2,3,None,5,None,4])
-	binTreeAPI = BinaryTree()
-	ret = binTreeAPI.rightSideView(ret)
+	# binTreeAPI = BinaryTree()
+	# ret = binTreeAPI.rightSideView(ret)
+	# print(ret)
+	###########################################
+	codecAPI = Codec()
+	ret = codecAPI.serialize(ret)
 	print(ret)
+	ret1 = codecAPI.deserialize(ret)
+	print(ret1)
+	ret2 = codecAPI.preOrderedTraversal(ret1)
+	print(ret2)
+	###########################################
